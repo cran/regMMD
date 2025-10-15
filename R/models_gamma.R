@@ -8,7 +8,7 @@ SGD.MMD.gamma.shape = function(x, par1, par2, kernel, bdwth, burnin, nstep, step
   
   # preparation of the output "res"
   
-  res = list(par1=par1, par2=par2, stepsize=stepsize, bdwth=bdwth, error=NULL, estimator=NULL)
+  res = list(par1=par1, par2=par2, stepsize=stepsize, bdwth=bdwth, error=NULL, estimator=NULL, trajectory=NULL)
   
   # sanity check for the initialization, otherwise, set the default initialization for SGD
   
@@ -37,6 +37,7 @@ SGD.MMD.gamma.shape = function(x, par1, par2, kernel, bdwth, burnin, nstep, step
   res$par1 = par
   res$par2 = par2
   res$stepsize=stepsize
+  trajectory = c(par)
   
   # BURNIN period
   
@@ -48,6 +49,7 @@ SGD.MMD.gamma.shape = function(x, par1, par2, kernel, bdwth, burnin, nstep, step
     norm.grad = norm.grad + grad^2
     par = par-stepsize*grad/sqrt(norm.grad)
     par = max(par,0.5)
+    trajectory = c(trajectory, par)
   }
   
   # SGD period
@@ -63,11 +65,13 @@ SGD.MMD.gamma.shape = function(x, par1, par2, kernel, bdwth, burnin, nstep, step
     par = par-stepsize*grad/sqrt(norm.grad)
     par = max(par,0.5)
     par_mean = (par_mean*i + par)/(i+1)
+    trajectory = c(trajectory, par_mean)
   }
   
   # return
   
   res$estimator = par_mean
+  res$trajectory = trajectory
   return(res)
   
 }
@@ -80,7 +84,7 @@ SGD.MMD.gamma.rate = function(x, par1, par2, kernel, bdwth, burnin, nstep, steps
   
   # preparation of the output "res"
   
-  res = list(par1=par1, par2=par2, stepsize=stepsize, bdwth=bdwth, error=NULL, estimator=NULL)
+  res = list(par1=par1, par2=par2, stepsize=stepsize, bdwth=bdwth, error=NULL, estimator=NULL, trajectory=NULL)
   
   # sanity check for the initialization, otherwise, set the default initialization for SGD
   
@@ -109,6 +113,7 @@ SGD.MMD.gamma.rate = function(x, par1, par2, kernel, bdwth, burnin, nstep, steps
   res$par1 = par1
   res$par2 = par
   res$stepsize=stepsize
+  trajectory = c(par)
   
   # BURNIN period
   
@@ -120,6 +125,7 @@ SGD.MMD.gamma.rate = function(x, par1, par2, kernel, bdwth, burnin, nstep, steps
     norm.grad = norm.grad + grad^2
     par = par-stepsize*grad/sqrt(norm.grad)
     par = max(par,1/n)
+    trajectory = c(trajectory, par)
   }
   
   # SGD period
@@ -135,11 +141,13 @@ SGD.MMD.gamma.rate = function(x, par1, par2, kernel, bdwth, burnin, nstep, steps
     par = par-stepsize*grad/sqrt(norm.grad)
     par = max(par,1/n)
     par_mean = (par_mean*i + par)/(i+1)
+    trajectory = c(trajectory, par_mean)
   }
   
   # return
   
   res$estimator = par_mean
+  res$trajectory = trajectory
   return(res)
   
 }
@@ -152,7 +160,7 @@ SGD.MMD.gamma = function(x, par1, par2, kernel, bdwth, burnin, nstep, stepsize, 
   
   # preparation of the output "res"
   
-  res = list(par1=par1, par2=par2, stepsize, bdwth=bdwth, error=NULL, estimator=NULL)
+  res = list(par1=par1, par2=par2, stepsize, bdwth=bdwth, error=NULL, estimator=NULL, trajectory=NULL)
   
   # sanity check for the initialization, otherwise, set the default initialization for SGD
   
@@ -184,6 +192,7 @@ SGD.MMD.gamma = function(x, par1, par2, kernel, bdwth, burnin, nstep, stepsize, 
   res$par1 = par[1]
   res$par2 = par[2]
   res$stepsize=stepsize
+  trajectory = matrix(data=par,nrow=2,ncol=1)
   
   # BURNIN period
   
@@ -197,6 +206,7 @@ SGD.MMD.gamma = function(x, par1, par2, kernel, bdwth, burnin, nstep, stepsize, 
     par = par-stepsize*grad/sqrt(norm.grad)
     par[1] = max(par[1],0.5)
     par[2] = max(par[2],1/n)
+    trajectory = cbind(trajectory,par)
   }
   
   # SGD period
@@ -214,11 +224,13 @@ SGD.MMD.gamma = function(x, par1, par2, kernel, bdwth, burnin, nstep, stepsize, 
     par[1] = max(par[1],0.5)
     par[2] = max(par[2],1/n)
     par_mean = (par_mean*i + par)/(i+1)
+    trajectory = cbind(trajectory,par_mean)
   }
   
   # return
   
   res$estimator = par_mean
+  res$trajectory = trajectory
   return(res)
   
 }

@@ -7,7 +7,7 @@ GD.MMD.Dirac = function(x, par1, par2, kernel, bdwth, burnin, nstep, stepsize, e
   
   # preparation of the output "res"
   
-  res = list(par1=par1, par2=par2, stepsize=stepsize, bdwth=bdwth, error=NULL, estimator=NULL)
+  res = list(par1=par1, par2=par2, stepsize=stepsize, bdwth=bdwth, error=NULL, estimator=NULL, trajectory=NULL)
   
   # initialiation of GD
   
@@ -27,6 +27,7 @@ GD.MMD.Dirac = function(x, par1, par2, kernel, bdwth, burnin, nstep, stepsize, e
   res$par1 = par
   res$par2 = NULL
   res$stepsize=stepsize
+  trajectory = c(par)
   
   # BURNIN period
   
@@ -34,6 +35,7 @@ GD.MMD.Dirac = function(x, par1, par2, kernel, bdwth, burnin, nstep, stepsize, e
     grad = -2*mean(K1d.diff(par,x,kernel=kernel,bdwth=bdwth))
     norm.grad = norm.grad + grad^2
     par = par-stepsize*grad/sqrt(norm.grad)
+    trajectory = c(trajectory,par)
   }
   
   # GD period
@@ -45,11 +47,13 @@ GD.MMD.Dirac = function(x, par1, par2, kernel, bdwth, burnin, nstep, stepsize, e
     norm.grad = norm.grad + grad^2
     par = par-stepsize*grad/sqrt(norm.grad)
     par_mean = (par_mean*i + par)/(i+1)
+    trajectory = c(trajectory,par_mean)
   }
   
   # return
   
   res$estimator = par_mean
+  res$trajectory = trajectory
   return(res)
   
 }

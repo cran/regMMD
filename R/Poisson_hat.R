@@ -112,7 +112,7 @@ Poisson_hat<-function(y, Z, intercept, sd.z, par1, kernel, M.det, M.rand, bdwth,
 	
 	#return the results
 	res$coefficients <- store[nsteps,]
-  	res$trace<-store
+  	res$trajectory<-store
     
   	return(res)   
 }	

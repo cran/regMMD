@@ -8,7 +8,7 @@ SGD.MMD.beta = function(x, par1, par2, kernel, bdwth, burnin, nstep, stepsize, e
   
   # preparation of the output "res"
   
-  res = list(par1=par1, par2=par2, stepsize=stepsize, bdwth=bdwth, error=NULL, estimator=NULL)
+  res = list(par1=par1, par2=par2, stepsize=stepsize, bdwth=bdwth, error=NULL, estimator=NULL, trajectory=NULL)
   
   # sanity check for the initialization, otherwise, set the default initialization for SGD
   
@@ -43,6 +43,7 @@ SGD.MMD.beta = function(x, par1, par2, kernel, bdwth, burnin, nstep, stepsize, e
   res$par1 = par[1]
   res$par2 = par[2]
   res$stepsize=stepsize
+  trajectory = matrix(data=par,nrow=2,ncol=1)
   
   # BURNIN period
   
@@ -56,6 +57,7 @@ SGD.MMD.beta = function(x, par1, par2, kernel, bdwth, burnin, nstep, stepsize, e
     par = par-stepsize*grad/sqrt(norm.grad)
     par[1] = max(par[1],1/n)
     par[2] = max(par[2],1/n)
+    trajectory = cbind(trajectory,par)
   }
   
   # SGD period
@@ -73,11 +75,13 @@ SGD.MMD.beta = function(x, par1, par2, kernel, bdwth, burnin, nstep, stepsize, e
     par[1] = max(par[1],1/n)
     par[2] = max(par[2],1/n)
     par_mean = (par_mean*i + par)/(i+1)
+    trajectory = cbind(trajectory,par_mean)
   }
   
   # return
   
   res$estimator = par_mean
+  res$trajectory = trajectory
   return(res)
   
 }

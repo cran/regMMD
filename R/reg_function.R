@@ -35,15 +35,15 @@
 #' \item{\code{"poisson"}}{Poisson regression model.}
 #'}
 #'
-#' When \code{bdwth.x}>0 the function \code{reg_mmd} computes the estimator \eqn{\hat{\theta}_n} introduced in \insertCite{MMD;textual}{regMMD}. When \code{bdwth.x}=0  the function \code{reg_mmd} computes the estimator \eqn{\tilde{\theta}_n} introduced in \insertCite{MMD;textual}{regMMD}. The former estimator has stronger theoretical properties but is more expensive to compute (see below).
+#' When \code{bdwth.x}>0 the function \code{mmd_reg} computes the estimator \eqn{\hat{\theta}_n} introduced in \insertCite{MMD;textual}{regMMD}. When \code{bdwth.x}=0  the function \code{mmd_reg} computes the estimator \eqn{\tilde{\theta}_n} introduced in \insertCite{MMD;textual}{regMMD}. The former estimator has stronger theoretical properties but is more expensive to compute (see below).
 #'
-#' When \code{bdwth.x}=0 and \code{model} is  \code{"linearGaussian"}, \code{"linearGaussian.loc"} or \code{"logistic"}, the objective function and its gradient can be computed on \eqn{\mathcal{O}(n)} operations, where \eqn{n} is the sample size (i.e. the dimension of \code{y}). In this case, gradient descent with backtraking line search is used to perform the minimizatiom. The algorithm stops  when the maximum number of iterations \code{maxit} is reached, or as soon as the change in the objective function is less than \code{eps_gd} times the current function value. In the former case, a warning message is generated. By defaut, \code{maxit}=\eqn{5\times 10^4} and  \code{eps_gd=sqrt(.Machine$double.eps)}, and the value of these two parameters can be changed using the \code{control} argument of \code{reg_mmd}.
+#' When \code{bdwth.x}=0 and \code{model} is  \code{"linearGaussian"}, \code{"linearGaussian.loc"} or \code{"logistic"}, the objective function and its gradient can be computed on \eqn{\mathcal{O}(n)} operations, where \eqn{n} is the sample size (i.e. the dimension of \code{y}). In this case, gradient descent with backtraking line search is used to perform the minimizatiom. The algorithm stops  when the maximum number of iterations \code{maxit} is reached, or as soon as the change in the objective function is less than \code{eps_gd} times the current function value. In the former case, a warning message is generated. By defaut, \code{maxit}=\eqn{5\times 10^4} and  \code{eps_gd=sqrt(.Machine$double.eps)}, and the value of these two parameters can be changed using the \code{control} argument of \code{mmd_reg}.
 #'
 #' When \code{bdwth.x}>0 and \code{model} is  \code{"linearGaussian"}, \code{"linearGaussian.loc"} or \code{"logistic"}, the objective function and its gradient can be computed on \eqn{\mathcal{O}(n^2)} operations. To reduce the computational cost the objective function is minimized using norm adagrad \insertCite{duchi2011adaptive}{regMMD}, an adaptive step size stochastic gradient algorithm. Each iteration of the algorithm requires \eqn{\mathcal{O}(n)} operations. However,  the algorithm has an intialization step that requires \eqn{\mathcal{O}(n^2)} operations and has a memory requirement of size \eqn{\mathcal{O}(n^2)}.
 #'
 #' When   \code{model} is not in \code{c("linearGaussian", "linearGaussian.loc", "logistic")},  the objective function and its gradient cannot be computed explicitly and the minimization is performed using norm adagrad. The cost per iteration of the algorithm is \eqn{\mathcal{O}(n)} but, for  \code{bdwth.x}>0, the memory requirement and the initialization cost are both of size \eqn{\mathcal{O}(n^2)}.
 #'
-#' When adagrad is used, \code{burnin} iterations  are performed as a warm-up step.  The algorithm then stops when \code{burnin}+\code{maxit} iterations are performed, or as soon as the norm of the average value of the gradient evaluations computed in all the previous iterations is less than \code{eps_sg}. A warning message is generated if the maximum number of iterations is reached. By default, \code{burnin}=\eqn{10^3}, \code{nsteps}=\eqn{5\times 10^4} and \code{eps_sg}=\eqn{10^{-5}} and  the value of these three parameters can be changed using the \code{control} argument of  \code{reg_mmd}.
+#' When adagrad is used, \code{burnin} iterations  are performed as a warm-up step.  The algorithm then stops when \code{burnin}+\code{maxit} iterations are performed, or as soon as the norm of the average value of the gradient evaluations computed in all the previous iterations is less than \code{eps_sg}. A warning message is generated if the maximum number of iterations is reached. By default, \code{burnin}=\eqn{10^3}, \code{nsteps}=\eqn{5\times 10^4} and \code{eps_sg}=\eqn{10^{-5}} and  the value of these three parameters can be changed using the \code{control} argument of  \code{mmd_reg}.
 #'
 #' If \code{bdwth.y="auto"} then the value of the bandwidth parameter of \code{kernel.y} is equal to \eqn{H_n/\sqrt{2}}  with \eqn{H_n}   the median value of the set \eqn{ \{|y_i-y_j|\}_{i,j=1}^n}, where \eqn{y_i} denote the ith component of \code{y}. This definition of \code{bdwth.y} is motivated by the results in \insertCite{garreau2017large;textual}{regMMD}. If \eqn{H_n=0} the bandwidth parameter of \code{kernel.y} is set to 1.
 #'
@@ -57,7 +57,7 @@
 #' \item{eps_sg}{A non-negative real number.}
 #' \item{maxit}{A integer strictly larger than 2.}
 #' \item{stepsize}{Scaling constant for the step-sizes used by adagrad. \code{stepsize} must be a stictly positive number and by default \code{stepsize}=1.}
-#' \item{trace:}{If \code{trace=TRUE} then the parameter value obtained at the end  of  each iteration  (after the burn-in perdiod for adagrad)  is returned. By default, \code{trace=TRUE} and   \code{trace} is automatically set to \code{TRUE} if the maximum number of iterations is reached.}
+#' \item{trajectory:}{If \code{trajectory=TRUE} then the parameter value obtained at the end  of  each iteration  (after the burn-in perdiod for adagrad)  is returned. By default, \code{trajectory=TRUE} and   \code{trajectory} is automatically set to \code{TRUE} if the maximum number of iterations is reached.}
 #' \item{epsilon}{Parameter used in adagrad to avoid numerical errors in the computation of the step-sizes. \code{epsilon} must be a strictly positive real number and by default \code{epsilon}=\eqn{10^{-4}}.}
 #' \item{alpha}{Parameter for the backtraking line search. \code{alpha} must be a real number in \eqn{(0,1)} and by default \code{alpha}=0.8.}
 #' \item{c_det}{Parameter used to control the computational cost of the algorithm when \code{gamma.x}\eqn{>0}, see the Suplementary material in \insertCite{MMD;textual}{regMMD} for mode details. \code{c_det} must be a real number in \eqn{(0,1)} and by default \code{c_det}=0.2.}
@@ -78,7 +78,7 @@
 #'   \item{bdwth.x}{Value of the bandwidth for the kernel applied on the explanatory variables used to fit the model.}
 #'   \item{par1}{Value of the parameter \code{par1} used to fit the model.}
 #'   \item{par2}{Value of  parameter \code{par2} used to fit the model.}
-#'   \item{trace}{If the control parameter \code{trace=TRUE}, \code{trace} is a matrix containing the parameter values obtained at the end of each iteration of the optimization algorithm.}
+#'   \item{trajectory}{If the control parameter \code{trajectory=TRUE}, \code{trajectory} is a matrix containing the parameter values obtained at the end of each iteration of the optimization algorithm.}
 #'
 #' @examples
 #' #Simulate data
@@ -129,7 +129,7 @@ mmd_reg<-function(y, X, model="linearGaussian", intercept=TRUE, par1="auto", par
 	BURNIN<-10^3
 	MAXIT<-50000
 	STEPSIZE<-1
-	TRACE<-TRUE
+	TRAJECTORY<-TRUE
 	EPSILON<-10^{-4}
 	ALPHA<-0.8
 	C_DET<-0.2
@@ -287,7 +287,7 @@ mmd_reg<-function(y, X, model="linearGaussian", intercept=TRUE, par1="auto", par
 	burnin<-BURNIN
 	maxit<-MAXIT
 	stepsize<-STEPSIZE
-	trace<-TRACE
+	trajectory<-TRAJECTORY
 	epsilon<-EPSILON
 	alpha<-ALPHA
 	c_det<-C_DET
@@ -349,12 +349,12 @@ mmd_reg<-function(y, X, model="linearGaussian", intercept=TRUE, par1="auto", par
 		 }
 	}
 
-	#check that variable "trace" is OK
-	if(is.null(control$trace)==FALSE){
- 		if(min(control$trace%in% c("TRUE","FALSE"))==0 || length(c(control$trace))>1){
- 		  warning("Error: Possible valued for 'trace' are: TRUE, FALSE"); return(invisible(res))		
+	#check that variable "trajectory" is OK
+	if(is.null(control$trajectory)==FALSE){
+ 		if(min(control$trajectory%in% c("TRUE","FALSE"))==0 || length(c(control$trajectory))>1){
+ 		  warning("Error: Possible valued for 'trajectory' are: TRUE, FALSE"); return(invisible(res))		
 		}else{
-			trace<-control$trace
+			trajectory<-control$trajectory
 		}
 	}
 	
@@ -583,14 +583,14 @@ mmd_reg<-function(y, X, model="linearGaussian", intercept=TRUE, par1="auto", par
 	#check convergence 
 	if(res$convergence==1){
 	  warning("Warning: The maximum number of iterations  has been reached.")
-		trace<-TRUE
+		trajectory<-TRUE
 	}
 	if(res$convergence==-1){
 		res<-NULL
 		warning("Error: Optimization of the objective function has failed"); return(invisible(res))
 	}
 	
-	if(trace==FALSE) res$trace<-NULL
+	if(trajectory==FALSE) res$trajectory<-NULL
 	res$convergence<-NULL
 	res$model<-model
 	res$intercept<-intercept

@@ -11,7 +11,7 @@ SGD.MMD.binomial.prob = function(x, par1, par2, kernel, bdwth, burnin, nstep, st
   
   # preparation of the output "res"
   
-  res = list(par1=par1, par2=par2, stepsize=stepsize, bdwth=bdwth, error=NULL, estimator=NULL)
+  res = list(par1=par1, par2=par2, stepsize=stepsize, bdwth=bdwth, error=NULL, estimator=NULL, trajectory=NULL)
   
   # sanity check for the initialization, otherwise, set the default initialization for SGD
   
@@ -36,6 +36,8 @@ SGD.MMD.binomial.prob = function(x, par1, par2, kernel, bdwth, burnin, nstep, st
   }
   
   if (is.null(res$error)==FALSE) return(res)
+
+  if (is.integer(x)==FALSE) res$error = c(res$error,"Attention: you used the binomial model on non-integer observations. If this is intentional, you can ignore this message. If your observations are integers but stored as numerical values, you can use x=as.integer(x) to avoid this warning.")
   
   # initialization of norm.grad
   
@@ -44,6 +46,7 @@ SGD.MMD.binomial.prob = function(x, par1, par2, kernel, bdwth, burnin, nstep, st
   res$par1 = par1
   res$par2 = par
   res$stepsize=stepsize
+  trajectory = c(par)
   
   # BURNIN period
   
@@ -56,6 +59,7 @@ SGD.MMD.binomial.prob = function(x, par1, par2, kernel, bdwth, burnin, nstep, st
     par = par-stepsize*grad/sqrt(norm.grad)
     if (par<1/n) par = 1/n
     if (par>1-1/n) par = 1-1/n
+    trajectory = c(trajectory,par)
   }
   
   # SGD period
@@ -72,14 +76,18 @@ SGD.MMD.binomial.prob = function(x, par1, par2, kernel, bdwth, burnin, nstep, st
     if (par<1/n) par = 1/n
     if (par>1-1/n) par = 1-1/n
     par_mean = (par_mean*i + par)/(i+1)
+    trajectory = c(trajectory,par_mean)
   }
   
   # return
   
   res$estimator = par_mean
+  res$trajectory = trajectory
   return(res)
   
 }
+
+# second series of function: GD
 
 # model: binomial.prob par2 = p fixed par1 = N
 
@@ -90,7 +98,7 @@ GD.MMD.binomial.prob = function(x, par1, par2, kernel, bdwth, burnin, nstep, ste
   
   # preparation of the output "res"
   
-  res = list(par1=par1, par2=par2, stepsize=stepsize, bdwth=bdwth, error=NULL, estimator=NULL)
+  res = list(par1=par1, par2=par2, stepsize=stepsize, bdwth=bdwth, error=NULL, estimator=NULL, trajectory=NULL)
   
   # sanity check for the initialization, otherwise, set the default initialization for SGD
   
@@ -114,6 +122,8 @@ GD.MMD.binomial.prob = function(x, par1, par2, kernel, bdwth, burnin, nstep, ste
     if (par2<=1/n) par = 1/n else if (par2>=1-1/n) par = 1-1/n else par = par2
   }
   if (is.null(res$error)==FALSE) return(res)
+
+  if (is.integer(x)==FALSE) res$error = c(res$error,"Attention: you used the binomial model on non-integer observations. If this is intentional, you can ignore this message. If your observations are integers but stored as numerical values, you can use x=as.integer(x) to avoid this warning.")
   
   # initialization of norm.grad
   
@@ -122,6 +132,7 @@ GD.MMD.binomial.prob = function(x, par1, par2, kernel, bdwth, burnin, nstep, ste
   res$par1 = par1
   res$par2 = par
   res$stepsize=stepsize
+  trajectory = c(par)
   
   # BURNIN period
   
@@ -134,6 +145,7 @@ GD.MMD.binomial.prob = function(x, par1, par2, kernel, bdwth, burnin, nstep, ste
     par = par-stepsize*grad/sqrt(norm.grad)
     if (par<1/n) par = 1/n
     if (par>1-1/n) par = 1-1/n
+    trajectory = c(trajectory,par)
   }
   
   # GD period
@@ -150,16 +162,16 @@ GD.MMD.binomial.prob = function(x, par1, par2, kernel, bdwth, burnin, nstep, ste
     if (par<1/n) par = 1/n
     if (par>1-1/n) par = 1-1/n
     par_mean = (par_mean*i + par)/(i+1)
+    trajectory = c(trajectory,par_mean)
   }
   
   # return
   
   res$estimator = par_mean
+  res$trajectory = trajectory
   return(res)
   
 }
-
-# second series of function: GD
 
 # model: binomial par1 = N par2 = p // here, if par1 provided, we take it as the maximum value to test
 
@@ -170,7 +182,7 @@ GD.MMD.binomial = function(x, par1, par2, kernel, bdwth, burnin, nstep, stepsize
   
   # preparation of the output "res"
   
-  res = list(par1=NULL, par2=NULL, stepsize=NULL, bdwth=bdwth, error=NULL, estimator=NULL)
+  res = list(par1=NULL, par2=NULL, stepsize=NULL, bdwth=bdwth, error=NULL, estimator=NULL, trajectory=NULL)
   
   # sanity check for the initialization, otherwise, set the default initialization for SGD
   
@@ -186,6 +198,8 @@ GD.MMD.binomial = function(x, par1, par2, kernel, bdwth, burnin, nstep, stepsize
     parmax = par1
   }
   if (is.null(res$error)==FALSE) return(res)
+
+  if (is.integer(x)==FALSE) res$error = c(res$error,"Attention: you used the binomial model on non-integer observations. If this is intentional, you can ignore this message. If your observations are integers but stored as numerical values, you can use x=as.integer(x) to avoid this warning.")
   
   # in this model, we have explicit formula, so we do a loop for all possible par
   
@@ -200,7 +214,8 @@ GD.MMD.binomial = function(x, par1, par2, kernel, bdwth, burnin, nstep, stepsize
   while ((carryon)&&(size<parmax)) {
     size = size + 1
     x.sampled = c(0:size)
-    p = GD.MMD.binomial.prob(x=x, par1=size, par2=NULL, kernel=kernel, bdwth=bdwth, burnin=burnin, nstep=nstep, stepsize=stepsize, epsilon=epsilon)$estimator
+    estimation = GD.MMD.binomial.prob(x=x, par1=size, par2=NULL, kernel=kernel, bdwth=bdwth, burnin=burnin, nstep=nstep, stepsize=stepsize, epsilon=epsilon)
+    p = estimation$estimator
     prob = dbinom(x=x.sampled,size = size, prob = p)
     crit = prob%*%K1d(x.sampled,x.sampled,kernel=kernel,bdwth=bdwth)%*%prob-2*mean(prob%*%K1d(x.sampled,x,kernel=kernel,bdwth=bdwth))
     if ((parmax==Inf)&&(crit[1,1]>crit.old)) {
@@ -209,11 +224,13 @@ GD.MMD.binomial = function(x, par1, par2, kernel, bdwth, burnin, nstep, stepsize
       best.crit = crit[1,1]
       best.size = size
       best.p = p
+      trajectory = estimation$trajectory
     }
     crit.old = crit[1,1]
   }
   
   res$estimator = c(best.size,best.p)
+  res$trajectory = trajectory
   return(res)
   
 }
@@ -229,7 +246,7 @@ EXACT.MMD.binomial.size = function(x, par1, par2, kernel, bdwth, burnin, nstep, 
   
   # preparation of the output "res"
   
-  res = list(par1=NULL, par2=NULL, stepsize=NULL, bdwth=bdwth, error=NULL, estimator=NULL)
+  res = list(par1=NULL, par2=NULL, stepsize=NULL, bdwth=bdwth, error=NULL, estimator=NULL, trajectory=NULL)
   
   # initialiation
   
@@ -252,6 +269,8 @@ EXACT.MMD.binomial.size = function(x, par1, par2, kernel, bdwth, burnin, nstep, 
     res$error = c(res$error,"par2 must be in (0,1)")
   }
   if (is.null(res$error)==FALSE) return(res)
+
+  if (is.integer(x)==FALSE) res$error = c(res$error,"Attention: you used the binomial model on non-integer observations. If this is intentional, you can ignore this message. If your observations are integers but stored as numerical values, you can use x=as.integer(x) to avoid this warning.")
   
   # in this model, we have explicit formula, so we do a loop for all possible par
   

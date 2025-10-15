@@ -9,7 +9,9 @@ SGD.MMD.geometric = function(x, par1, par2, kernel, bdwth, burnin, nstep, stepsi
   
   # preparation of the output "res"
   
-  res = list(par1=par1, par2=par2, stepsize=stepsize, bdwth=bdwth, error=NULL, estimator=NULL)
+  res = list(par1=par1, par2=par2, stepsize=stepsize, bdwth=bdwth, error=NULL, estimator=NULL, trajectory=NULL)
+
+  if (is.integer(x)==FALSE) res$error = c(res$error,"Attention: you used the geometric model on non-integer observations. If this is intentional, you can ignore this message. If your observations are integers but stored as numerical values, you can use x=as.integer(x) to avoid this warning.")
   
   # sanity check for the initialization, otherwise, set the default initialization for SGD
   
@@ -37,6 +39,7 @@ SGD.MMD.geometric = function(x, par1, par2, kernel, bdwth, burnin, nstep, stepsi
   res$par1 = par
   res$par2 = NULL
   res$stepsize=stepsize
+  trajectory = c(par)
   
   # BURNIN period
   
@@ -49,6 +52,7 @@ SGD.MMD.geometric = function(x, par1, par2, kernel, bdwth, burnin, nstep, stepsi
     par = par-stepsize*grad/sqrt(norm.grad)
     if (par<1/n) par = 1/n
     if (par>1-1/n) par = 1-1/n
+    trajectory = c(trajectory, par)
   }
   
   # SGD period
@@ -65,11 +69,13 @@ SGD.MMD.geometric = function(x, par1, par2, kernel, bdwth, burnin, nstep, stepsi
     if (par<1/n) par = 1/n
     if (par>1-1/n) par = 1-1/n
     par_mean = (par_mean*i + par)/(i+1)
+    trajectory = c(trajectory, par_mean)
   }
   
   # return
   
   res$estimator = par_mean
+  res$trajectory = trajectory
   return(res)
   
 }

@@ -174,7 +174,7 @@ mmd_est = function(x, model, par1=NULL, par2=NULL, kernel="Gaussian", bdwth="med
   
   # prepare the output
   
-  out = list(model=model, par1init=par1, par2init=par2, kernel=kernel, bdwth=bdwth, burnin=burnin, nstep=nstep, stepsize=stepsize, epsilon=epsilon, method=method, error=NULL, estimator=NULL, type="est")
+  out = list(model=model, par1init=par1, par2init=par2, kernel=kernel, bdwth=bdwth, burnin=burnin, nstep=nstep, stepsize=stepsize, epsilon=epsilon, method=method, trajectory=NULL, error=NULL, estimator=NULL, type="est")
   
   # sanity test for the inputs, and set some of the default values
   
@@ -373,6 +373,7 @@ mmd_est = function(x, model, par1=NULL, par2=NULL, kernel="Gaussian", bdwth="med
     out$error = resultat$error
     out$method = method
     out$estimator = resultat$estimator
+    out$trajectory = resultat$trajectory
     class(out) <- "estMMD"
     return(invisible(out))
   }

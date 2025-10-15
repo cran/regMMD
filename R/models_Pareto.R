@@ -6,7 +6,7 @@ SGD.MMD.Pareto = function(x, par1, par2, kernel, bdwth, burnin, nstep, stepsize,
   
   # preparation of the output "res"
   
-  res = list(par1=par1, par2=par2, stepsize=stepsize, bdwth=bdwth, error=NULL, estimator=NULL)
+  res = list(par1=par1, par2=par2, stepsize=stepsize, bdwth=bdwth, error=NULL, estimator=NULL, trajectory=NULL)
   
   # sanity check for the initialization, otherwise, set the default initialization for SGD
   
@@ -26,6 +26,7 @@ SGD.MMD.Pareto = function(x, par1, par2, kernel, bdwth, burnin, nstep, stepsize,
   res$par1 = par
   res$par2 = NULL
   res$stepsize=stepsize
+  trajectory = c(par)
   
   # BURNIN period
   
@@ -37,6 +38,7 @@ SGD.MMD.Pareto = function(x, par1, par2, kernel, bdwth, burnin, nstep, stepsize,
     norm.grad = norm.grad + grad^2
     par = par-stepsize*grad/sqrt(norm.grad)
     par = max(par,1/n)
+    trajectory = c(trajectory, par)
   }
   
   # SGD period
@@ -52,11 +54,13 @@ SGD.MMD.Pareto = function(x, par1, par2, kernel, bdwth, burnin, nstep, stepsize,
     par = par-stepsize*grad/sqrt(norm.grad)
     par = max(par,1/n)
     par_mean = (par_mean*i + par)/(i+1)
+    trajectory = c(trajectory, par_mean)
   }
   
   # return
   
   res$estimator = par_mean
+  res$trajectory = trajectory
   return(res)
   
 }

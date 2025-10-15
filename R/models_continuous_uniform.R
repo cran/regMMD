@@ -10,7 +10,7 @@ SGD.MMD.continuous.uniform.loc = function(x, par1, par2, kernel, bdwth, burnin, 
   
   # preparation of the output "res"
   
-  res = list(par1=par1, par2=par2, stepsize=stepsize, bdwth=bdwth, error=NULL, estimator=NULL)
+  res = list(par1=par1, par2=par2, stepsize=stepsize, bdwth=bdwth, error=NULL, estimator=NULL, trajectory=NULL)
   
   # sanity check for the initialization, otherwise, set the default initialization for SGD
   
@@ -37,6 +37,7 @@ SGD.MMD.continuous.uniform.loc = function(x, par1, par2, kernel, bdwth, burnin, 
   res$par1 = par
   res$par2 = par2
   res$stepsize=stepsize
+  trajectory = par
   
   # BURNIN period
   
@@ -46,6 +47,7 @@ SGD.MMD.continuous.uniform.loc = function(x, par1, par2, kernel, bdwth, burnin, 
     grad = -2*mean(ker)
     norm.grad = norm.grad + grad^2
     par = par-stepsize*grad/sqrt(norm.grad)
+    trajectory = c(trajectory,par)
   }
   
   # SGD period
@@ -59,11 +61,13 @@ SGD.MMD.continuous.uniform.loc = function(x, par1, par2, kernel, bdwth, burnin, 
     norm.grad = norm.grad + grad^2
     par = par-stepsize*grad/sqrt(norm.grad)
     par_mean = (par_mean*i + par)/(i+1)
+    trajectory = c(trajectory,par_mean)
   }
   
   # return
   
   res$estimator = par_mean
+  res$trajectory = trajectory
   return(res)
   
 }
@@ -76,7 +80,7 @@ SGD.MMD.continuous.uniform.upper = function(x, par1, par2, kernel, bdwth, burnin
   
   # preparation of the output "res"
   
-  res = list(par1=par1, par2=par2, stepsize=stepsize, bdwth=bdwth, error=NULL, estimator=NULL)
+  res = list(par1=par1, par2=par2, stepsize=stepsize, bdwth=bdwth, error=NULL, estimator=NULL, trajectory=NULL)
   
   # sanity check for the initialization, otherwise, set the default initialization for SGD
   
@@ -101,6 +105,7 @@ SGD.MMD.continuous.uniform.upper = function(x, par1, par2, kernel, bdwth, burnin
   res$par1 = par1
   res$par2 = par
   res$stepsize=stepsize
+  trajectory = c(par)
   
   # BURNIN period
   
@@ -111,6 +116,7 @@ SGD.MMD.continuous.uniform.upper = function(x, par1, par2, kernel, bdwth, burnin
     grad = 2*mean(x.sampled%*%ker)
     norm.grad = norm.grad + grad^2
     par = par-stepsize*grad/sqrt(norm.grad)
+    trajectory = c(trajectory, par)
   }
   
   # SGD period
@@ -125,11 +131,13 @@ SGD.MMD.continuous.uniform.upper = function(x, par1, par2, kernel, bdwth, burnin
     norm.grad = norm.grad + grad^2
     par = par-stepsize*grad/sqrt(norm.grad)
     par_mean = (par_mean*i + par)/(i+1)
+    trajectory = c(trajectory, par_mean)
   }
   
   # return
   
   res$estimator = par_mean
+  res$trajectory = trajectory
   return(res)
   
 }
@@ -144,7 +152,7 @@ SGD.MMD.continuous.uniform.lower.upper = function(x, par1, par2, kernel, bdwth, 
   
   # preparation of the output "res"
   
-  res = list(par1=par1, par2=par2, stepsize=stepsize, bdwth=bdwth, error=NULL, estimator=NULL)
+  res = list(par1=par1, par2=par2, stepsize=stepsize, bdwth=bdwth, error=NULL, estimator=NULL, trajectory=NULL)
   
   # sanity check for the initialization, otherwise, set the default initialization for SGD
   
@@ -176,6 +184,7 @@ SGD.MMD.continuous.uniform.lower.upper = function(x, par1, par2, kernel, bdwth, 
   res$par1 = par[1]
   res$par2 = par[2]
   res$stepsize=stepsize
+  trajectory = matrix(data=par,nrow=2,ncol=1)
   
   # BURNIN period
   
@@ -190,6 +199,7 @@ SGD.MMD.continuous.uniform.lower.upper = function(x, par1, par2, kernel, bdwth, 
     norm.grad = norm.grad + grad^2
     par = par-stepsize*grad/sqrt(norm.grad)
     if (par[1]>par[2]) {temp=par[1]; par[1]=par[2]; par[2]=temp}
+    trajectory = cbind(trajectory,par)
   }
   
   # SGD period
@@ -207,11 +217,13 @@ SGD.MMD.continuous.uniform.lower.upper = function(x, par1, par2, kernel, bdwth, 
     norm.grad = norm.grad + grad^2
     par = par-stepsize*grad/sqrt(norm.grad)
     par_mean = (par_mean*i + par)/(i+1)
+    trajectory = cbind(trajectory,par_mean)
   }
   
   # return
   
   res$estimator = par_mean
+  res$trajectory = trajectory
   return(res)
   
 }
@@ -222,7 +234,7 @@ GD.MMD.continuous.uniform.loc = function(x, par1, par2, kernel, bdwth, burnin, n
   
   # preparation of the output "res"
   
-  res = list(par1=par1, par2=par2, stepsize=stepsize, bdwth=bdwth, error=NULL, estimator=NULL)
+  res = list(par1=par1, par2=par2, stepsize=stepsize, bdwth=bdwth, error=NULL, estimator=NULL, trajectory=NULL)
   
   # sanity check for the initialization, otherwise, set the default initialization for SGD
   
@@ -249,6 +261,7 @@ GD.MMD.continuous.uniform.loc = function(x, par1, par2, kernel, bdwth, burnin, n
   res$par1 = par
   res$par2 = par2
   res$stepsize=stepsize
+  trajectory = matrix(data=par,nrow=2,ncol=1)
   
   # BURNIN period
   
@@ -257,6 +270,7 @@ GD.MMD.continuous.uniform.loc = function(x, par1, par2, kernel, bdwth, burnin, n
     grad = -2*mean(K1d(par+0.5*par2,x,kernel=kernel,bdwth=bdwth)-K1d(par-0.5*par2,x,kernel=kernel,bdwth=bdwth))
     norm.grad = norm.grad + grad^2
     par = par-stepsize*grad/sqrt(norm.grad)
+    trajectory = cbind(trajectory,par)
   }
   
   # GD period
@@ -269,11 +283,13 @@ GD.MMD.continuous.uniform.loc = function(x, par1, par2, kernel, bdwth, burnin, n
     norm.grad = norm.grad + grad^2
     par = par-stepsize*grad/sqrt(norm.grad)
     par_mean = (par_mean*i + par)/(i+1)
+    trajectory = cbind(trajectory,par_mean)
   }
   
   # return
   
   res$estimator = par_mean
+  res$trajectory = trajectory
   return(res)
   
 }

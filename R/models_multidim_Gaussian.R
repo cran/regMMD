@@ -11,7 +11,7 @@ SGD.MMD.multidim.Gaussian.loc = function(x, par1, par2, kernel, bdwth, burnin, n
   
   # preparation of the output "res"
   
-  res = list(par1=par1, par2=par2, stepsize=stepsize, bdwth=bdwth, error=NULL, estimator=NULL)
+  res = list(par1=par1, par2=par2, stepsize=stepsize, bdwth=bdwth, error=NULL, estimator=NULL, trajectory=NULL)
   
   # sanity check for the initialization, otherwise, set the default initialization for SGD
   
@@ -41,6 +41,7 @@ SGD.MMD.multidim.Gaussian.loc = function(x, par1, par2, kernel, bdwth, burnin, n
   res$par1 = par
   res$par2 = par2
   res$stepsize=stepsize
+  trajectory = matrix(data=par,nrow=p,ncol=1)
   
   # BURNIN period
   
@@ -52,6 +53,7 @@ SGD.MMD.multidim.Gaussian.loc = function(x, par1, par2, kernel, bdwth, burnin, n
     grad = c(2*t(gradL)%*%ker%*%matrix(data=1/n,nrow=n,ncol=1))
     norm.grad = norm.grad + sum(grad^2)
     par = par-stepsize*grad/sqrt(norm.grad)
+    trajectory = cbind(trajectory,par)
   }
   
   # SGD period
@@ -67,11 +69,13 @@ SGD.MMD.multidim.Gaussian.loc = function(x, par1, par2, kernel, bdwth, burnin, n
     norm.grad = norm.grad + sum(grad^2)
     par = par-stepsize*grad/sqrt(norm.grad)
     par_mean = (par_mean*i + par)/(i+1)
+    trajectory = cbind(trajectory,par_mean)
   }
   
   # return
   
   res$estimator = par_mean
+  res$trajectory = trajectory
   return(res)
   
 }
@@ -85,7 +89,7 @@ SGD.MMD.multidim.Gaussian.scale = function(x, par1, par2, kernel, bdwth, burnin,
   
   # preparation of the output "res"
   
-  res = list(par1=par1, par2=par2, stepsize=stepsize, bdwth=bdwth, error=NULL, estimator=NULL)
+  res = list(par1=par1, par2=par2, stepsize=stepsize, bdwth=bdwth, error=NULL, estimator=NULL, trajectory=NULL)
   
   # sanity check for the initialization, otherwise, set the default initialization for SGD
   
@@ -115,6 +119,7 @@ SGD.MMD.multidim.Gaussian.scale = function(x, par1, par2, kernel, bdwth, burnin,
   res$par1 = par1
   res$par2 = par
   res$stepsize=stepsize
+  trajectory = par
   
   # BURNIN period
   
@@ -126,6 +131,7 @@ SGD.MMD.multidim.Gaussian.scale = function(x, par1, par2, kernel, bdwth, burnin,
     grad = -2*sigminus%*%(sum(ker)*diag(p)-t(x.sampled.centered)%*%diag((ker%*%matrix(data=1,nrow=n,ncol=1))[,1])%*%(x.sampled.centered)%*%sigminus)%*%par/n
     norm.grad = norm.grad + norm(grad, type="F")^2
     par = par-stepsize*grad/sqrt(norm.grad)
+    trajectory = cbind(trajectory,par)
   }
   
   # SGD period
@@ -141,11 +147,13 @@ SGD.MMD.multidim.Gaussian.scale = function(x, par1, par2, kernel, bdwth, burnin,
     norm.grad = norm.grad + norm(grad, type="F")^2
     par = par-stepsize*grad/sqrt(norm.grad)
     par_mean = (par_mean*i + par)/(i+1)
+    trajectory = cbind(trajectory,par_mean)
   }
   
   # return
   
   res$estimator = par_mean
+  res$trajectory = trajectory
   return(res)
   
 }
@@ -159,7 +167,7 @@ SGD.MMD.multidim.Gaussian = function(x, par1, par2, kernel, bdwth, burnin, nstep
   
   # preparation of the output "res"
   
-  res = list(par1=par1, par2=par2, stepsize=stepsize, bdwth=bdwth, error=NULL, estimator=NULL)
+  res = list(par1=par1, par2=par2, stepsize=stepsize, bdwth=bdwth, error=NULL, estimator=NULL, trajectory=NULL)
   
   # sanity check for the initialization, otherwise, set the default initialization for SGD
   
@@ -188,6 +196,7 @@ SGD.MMD.multidim.Gaussian = function(x, par1, par2, kernel, bdwth, burnin, nstep
   res$par1 = par1
   res$par2 = par2
   res$stepsize=stepsize
+  trajectory = list(t1=matrix(data=par1,nrow=p,ncol=1),t2=par2)
   
   # BURNIN period
   
@@ -202,6 +211,8 @@ SGD.MMD.multidim.Gaussian = function(x, par1, par2, kernel, bdwth, burnin, nstep
     norm.grad = norm.grad + sum(grad1^2) + norm(grad2, type="F")^2
     par1 = par1-stepsize*grad1/sqrt(norm.grad)
     par2 = par2-stepsize*grad2/sqrt(norm.grad)
+    trajectory$t1 = cbind(trajectory$t1, par1)
+    trajectory$t2 = cbind(trajectory$t2, par2)
   }
   
   # SGD period
@@ -222,11 +233,14 @@ SGD.MMD.multidim.Gaussian = function(x, par1, par2, kernel, bdwth, burnin, nstep
     par2 = par2-stepsize*grad2/sqrt(norm.grad)
     par1_mean = (par1_mean*i + par1)/(i+1)
     par2_mean = (par2_mean*i + par2)/(i+1)
+    trajectory$t1 = cbind(trajectory$t1, par1_mean)
+    trajectory$t2 = cbind(trajectory$t2, par2_mean)
   }
   
   # return
   
   res$estimator = list(par1 = par1_mean, par2 = par2_mean)
+  trajectory = res$trajectory
   return(res)
   
 }
@@ -242,7 +256,7 @@ GD.MMD.multidim.Gaussian.loc = function(x, par1, par2, kernel, bdwth, burnin, ns
   
   # preparation of the output "res"
   
-  res = list(par1=par1, par2=par2, stepsize=stepsize, bdwth=bdwth, error=NULL, estimator=NULL)
+  res = list(par1=par1, par2=par2, stepsize=stepsize, bdwth=bdwth, error=NULL, estimator=NULL, trajectory=NULL)
   
   # sanity check for the initialization, otherwise, set the default initialization for SGD
   
@@ -272,6 +286,7 @@ GD.MMD.multidim.Gaussian.loc = function(x, par1, par2, kernel, bdwth, burnin, ns
   res$par1 = par
   res$par2 = par2
   res$stepsize=stepsize
+  trajectory = matrix(data=par,nrow=p,ncol=1)
   
   # BURNIN period
   
@@ -281,6 +296,7 @@ GD.MMD.multidim.Gaussian.loc = function(x, par1, par2, kernel, bdwth, burnin, ns
     grad = 4*(1/(1+2*(par2^2)/bdwth))*(rep(1/n,n)%*%(diff*exp(-w)))[1,]
     norm.grad = norm.grad + grad^2
     par = par-stepsize*grad/sqrt(norm.grad)
+    trajectory = cbind(trajectory,par)
   }
   
   # GD period
@@ -294,11 +310,13 @@ GD.MMD.multidim.Gaussian.loc = function(x, par1, par2, kernel, bdwth, burnin, ns
     norm.grad = norm.grad + grad^2
     par = par-stepsize*grad/sqrt(norm.grad)
     par_mean = (par_mean*i + par)/(i+1)
+    trajectory = cbind(trajectory,par_mean)
   }
   
   # return
   
   res$estimator = par_mean
+  trajectory = res$trajectory
   return(res)
   
 }

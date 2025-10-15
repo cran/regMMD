@@ -77,7 +77,7 @@ Poisson_tilde<-function(y, Z, intercept, sd.z, par1, kernel, bdwth, burnin,  nst
 	
 	#return the results
 	res$coefficients <- store[nsteps,]
-  	res$trace<-store
+  	res$trajectory<-store
   	return(res)
 }	
   	

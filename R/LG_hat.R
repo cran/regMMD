@@ -113,7 +113,7 @@ LG_SGD_loc_hat<-function(y, Z, intercept, sd.z, par1, par2, kernel, M.det, M.ran
  	     
   	# return the resuls
   	res$coefficients <- store[nsteps,]
-  	res$trace<-store
+  	res$trajectory<-store
  	return(res)
    
 }
@@ -246,7 +246,7 @@ LG_PartialSGD_loc_hat<-function(y, Z, intercept, sd.z, par1, par2, M.det, M.rand
  	
   	#return the resuls
   	res$coefficients <- store[nsteps,]
-  	res$trace<-store
+  	res$trajectory<-store
  
  	return(res)
    
@@ -389,7 +389,7 @@ LG_SGD_hat<-function(y, Z, intercept, sd.z, par1, par2, kernel, M.det, M.rand, b
 	#return the results
 	res$coefficients<-store[nsteps,1:d]
 	res$phi<-store[nsteps,d+1]
-	res$trace<-store
+	res$trajectory<-store
   	return(res)
 }
 
@@ -558,7 +558,7 @@ LG_PartialSGD_hat<-function(y, Z, intercept, sd.z, par1, par2, M.det, M.rand, bd
  	#return the results
   	res$coefficients<-store[nsteps,1:d]
   	res$phi<-store[nsteps,d+1]
-  	res$trace<-store  
+  	res$trajectory<-store  
  	return(res)
 }
 

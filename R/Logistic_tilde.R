@@ -73,7 +73,7 @@ Logistic_tilde<-function(y, Z, intercept, sd.z, par1, kernel, bdwth, nsteps, alp
 	
   	#return the results
   	res$coefficients<-store[nsteps,]
-  	res$trace<-store
+  	res$trajectory<-store
   	res$SG<-FALSE
   	
   	return(res)  

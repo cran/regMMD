@@ -94,7 +94,7 @@ Beta_loc_tilde<-function(y, Z, intercept, sd.z, par1, par2, kernel, bdwth, burni
 	
 	#return the results
 	res$coefficients <- store[nsteps,]
-  	res$trace<-store
+  	res$trajectory<-store
  
   	return(res) 
 }
@@ -217,7 +217,7 @@ Beta_tilde<-function(y, Z, intercept, sd.z, par1, par2, kernel, bdwth, burnin,  
 	#return the results
 	res$coefficients <- store[nsteps,1:d]
 	res$phi<-store[nsteps,d+1]
-  	res$trace<-store
+  	res$trajectory<-store
   	return(res)
    
 }

@@ -7,7 +7,9 @@ EXACT.MMD.discrete.uniform = function(x, par1, par2, kernel, bdwth, burnin, nste
   
   # preparation of the output "res"
   
-  res = list(par1=Inf, par2=NULL, stepsize=NULL, bdwth=bdwth, error=NULL, estimator=NULL)
+  res = list(par1=Inf, par2=NULL, stepsize=NULL, bdwth=bdwth, error=NULL, estimator=NULL, trajectory=NULL)
+
+  if (is.integer(x)==FALSE) res$error = c(res$error,"Attention: you used the discrete uniform model on non-integer observations. If this is intentional, you can ignore this message. If your observations are integers but stored as numerical values, you can use x=as.integer(x) to avoid this warning.")
   
   # in this model, we have explicit formula, so we do a loop for all possible par
   

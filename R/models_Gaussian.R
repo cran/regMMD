@@ -10,7 +10,7 @@ SGD.MMD.Gaussian.loc = function(x, par1, par2, kernel, bdwth, burnin, nstep, ste
   
   # preparation of the output "res"
   
-  res = list(par1=par1, par2=par2, stepsize=stepsize, bdwth=bdwth, error=NULL, estimator=NULL)
+  res = list(par1=par1, par2=par2, stepsize=stepsize, bdwth=bdwth, error=NULL, estimator=NULL, trajectory=NULL)
   
   # sanity check for the initialization, otherwise, set the default initialization for SGD
   
@@ -37,6 +37,7 @@ SGD.MMD.Gaussian.loc = function(x, par1, par2, kernel, bdwth, burnin, nstep, ste
   res$par1 = par
   res$par2 = par2
   res$stepsize=stepsize
+  trajectory = c(par)
   
   # BURNIN period
   
@@ -47,6 +48,7 @@ SGD.MMD.Gaussian.loc = function(x, par1, par2, kernel, bdwth, burnin, nstep, ste
     grad = 2*mean(gradL%*%ker)
     norm.grad = norm.grad + grad^2
     par = par-stepsize*grad/sqrt(norm.grad)
+    trajectory = c(trajectory, par)
   }
   
   # SGD period
@@ -61,11 +63,13 @@ SGD.MMD.Gaussian.loc = function(x, par1, par2, kernel, bdwth, burnin, nstep, ste
     norm.grad = norm.grad + grad^2
     par = par-stepsize*grad/sqrt(norm.grad)
     par_mean = (par_mean*i + par)/(i+1)
+    trajectory = c(trajectory, par_mean)
   }
   
   # return
   
   res$estimator = par_mean
+  res$trajectory = trajectory
   return(res)
   
 }
@@ -78,7 +82,7 @@ SGD.MMD.Gaussian.scale = function(x, par1, par2, kernel, bdwth, burnin, nstep, s
   
   # preparation of the output "res"
   
-  res = list(par1=par1, par2=par2, stepsize=stepsize, bdwth=bdwth, error=NULL, estimator=NULL)
+  res = list(par1=par1, par2=par2, stepsize=stepsize, bdwth=bdwth, error=NULL, estimator=NULL, trajectory=NULL)
   
   # sanity check for the initialization, otherwise, set the default initialization for SGD
   
@@ -108,6 +112,7 @@ SGD.MMD.Gaussian.scale = function(x, par1, par2, kernel, bdwth, burnin, nstep, s
   res$par1 = par1
   res$par2 = par
   res$stepsize=stepsize
+  trajectory = c(par)
   
   # BURNIN period
   
@@ -119,6 +124,7 @@ SGD.MMD.Gaussian.scale = function(x, par1, par2, kernel, bdwth, burnin, nstep, s
     norm.grad = norm.grad+grad^2
     par = par-stepsize*grad/sqrt(norm.grad)
     par = max(par,1/n)
+    trajectory = c(trajectory, par)
   }
   
   # SGD period
@@ -134,11 +140,13 @@ SGD.MMD.Gaussian.scale = function(x, par1, par2, kernel, bdwth, burnin, nstep, s
     par = par-stepsize*grad/sqrt(norm.grad)
     par = max(par,1/n)
     par_mean = (par_mean*i + par)/(i+1)
+    trajectory = c(trajectory, par_mean)
   }
   
   # return
   
   res$estimator = par_mean
+  res$trajectory = trajectory
   return(res)
   
 }
@@ -151,7 +159,7 @@ SGD.MMD.Gaussian = function(x, par1, par2, kernel, bdwth, burnin, nstep, stepsiz
   
   # preparation of the output "res"
   
-  res = list(par1=par1, par2=par2, stepsize=stepsize, bdwth=bdwth, error=NULL, estimator=NULL)
+  res = list(par1=par1, par2=par2, stepsize=stepsize, bdwth=bdwth, error=NULL, estimator=NULL, trajectory=NULL)
   
   # sanity check for the initialization, otherwise, set the default initialization for SGD
   
@@ -181,6 +189,7 @@ SGD.MMD.Gaussian = function(x, par1, par2, kernel, bdwth, burnin, nstep, stepsiz
   res$par1 = par[1]
   res$par2 = par[2]
   res$stepsize=stepsize
+  trajectory = matrix(data=par,nrow=2,ncol=1)
   
   # BURNIN period
   
@@ -193,6 +202,7 @@ SGD.MMD.Gaussian = function(x, par1, par2, kernel, bdwth, burnin, nstep, stepsiz
     norm.grad = norm.grad + sum(grad^2)
     par = par-stepsize*grad/sqrt(norm.grad)
     par[2] = max(par[2],1/n^2)
+    trajectory = cbind(trajectory,par)
   }
   
   # SGD period
@@ -209,11 +219,13 @@ SGD.MMD.Gaussian = function(x, par1, par2, kernel, bdwth, burnin, nstep, stepsiz
     par = par-stepsize*grad/sqrt(norm.grad)
     par[2] = max(par[2],1/n)
     par_mean = (par_mean*i + par)/(i+1)
+    trajectory = cbind(trajectory,par_mean)
   }
   
   # return
   
   res$estimator = par_mean
+  res$trajectory = trajectory
   return(res)
   
 }
@@ -226,7 +238,7 @@ GD.MMD.Gaussian.loc = function(x, par1, par2, kernel, bdwth, burnin, nstep, step
   
   # preparation of the output "res"
   
-  res = list(par1=par1, par2=par2, stepsize=stepsize, bdwth=bdwth, error=NULL, estimator=NULL)
+  res = list(par1=par1, par2=par2, stepsize=stepsize, bdwth=bdwth, error=NULL, estimator=NULL, trajectory=NULL)
   
   # sanity check for the initialization, otherwise, set the default initialization for SGD
   

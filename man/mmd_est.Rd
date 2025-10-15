@@ -39,6 +39,7 @@ An object of class \code{estMMD} is a list containing the following components:
 \item{method}{Optimization method used}
 \item{error}{Error message (if any)}
 \item{estimator}{Estimated parameter(s)}
+\item{trajectory}{The full trajectory of the optimization algorithm (GD or SGD)}
 \item{type}{Takes the value "\code{est}"}
 }
 \description{

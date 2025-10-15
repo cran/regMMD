@@ -80,7 +80,7 @@ LG_SGD_loc_tilde<-function(y, Z, intercept, sd.z, par1, par2, kernel, bdwth, bur
 	
 	#return the results
   	res$coefficients <- store[nsteps,]
-  	res$trace<-store
+  	res$trajectory<-store
   	return(res) 
 }
 
@@ -156,7 +156,7 @@ LG_GD_loc_tilde<-function(y, Z, intercept, sd.z, par1, par2, bdwth, nsteps, alph
   
   	#return the results
   	res$coefficients<-store[nsteps,]
-  	res$trace<-store
+  	res$trajectory<-store
   	return(res)
    
 }
@@ -262,7 +262,7 @@ LG_SGD_tilde<-function(y, Z, intercept, sd.z, par1, par2, kernel, bdwth, burnin,
  	#return the results
 	res$coefficients<-store[nsteps,1:d]
 	res$phi<-store[nsteps,d+1]
-	res$trace<-store
+	res$trajectory<-store
 	return(res)
    
 }
@@ -370,7 +370,7 @@ LG_GD_tilde<-function(y, Z, intercept, sd.z, par1, par2, bdwth, nsteps, alpha, e
   	#return the results
   	res$coefficients<-store[nsteps,1:d]
   	res$phi<-store[nsteps,d+1]
- 	res$trace<-store
+ 	res$trajectory<-store
  	
   	return(res)
    
