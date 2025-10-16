@@ -364,7 +364,7 @@ mmd_est = function(x, model, par1=NULL, par2=NULL, kernel="Gaussian", bdwth="med
   
   # return the final result 
   
-  if (is.null(resultat$error)==FALSE) {out$error= resultat$error; for (i in 1:length(out$error)) warning(out$error[i]); return(invisible(out))} else
+  if ((is.null(resultat$error)==TRUE)||((length(resultat$error)==1)&&(startsWith(resultat$error[1],"Attention"))))
   {
     out$par1init = resultat$par1
     out$par2init = resultat$par2
@@ -374,8 +374,9 @@ mmd_est = function(x, model, par1=NULL, par2=NULL, kernel="Gaussian", bdwth="med
     out$method = method
     out$estimator = resultat$estimator
     out$trajectory = resultat$trajectory
+    if (is.null(out$error)==FALSE)  warning(out$error)
     class(out) <- "estMMD"
     return(invisible(out))
-  }
+  } else {out$error= resultat$error; for (i in 1:length(out$error)) warning(out$error[i]); return(invisible(out))}
   
 }

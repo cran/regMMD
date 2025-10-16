@@ -39,7 +39,7 @@ GD.MMD.multidim.Dirac = function(x, par1, par2, kernel, bdwth, burnin, nstep, st
     grad = -2*(rep(1/n,n)%*%Kmd.diff(x,par,kernel=kernel,bdwth=bdwth))[1,]
     norm.grad = norm.grad + grad^2
     par = par-stepsize*grad/sqrt(norm.grad)
-    trajectory = cbind(trajectory,par)
+    trajectory = cbind(trajectory,matrix(data=par,nrow=p,ncol=1))
   }
   
   # GD period
@@ -51,7 +51,7 @@ GD.MMD.multidim.Dirac = function(x, par1, par2, kernel, bdwth, burnin, nstep, st
     norm.grad = norm.grad + grad^2
     par = par-stepsize*grad/sqrt(norm.grad)
     par_mean = (par_mean*i + par)/(i+1)
-    trajectory = cbind(trajectory,par_mean)
+    trajectory = cbind(trajectory,matrix(data=par_mean,nrow=p,ncol=1))
   }
   
   # return

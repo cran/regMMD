@@ -199,7 +199,7 @@ SGD.MMD.continuous.uniform.lower.upper = function(x, par1, par2, kernel, bdwth, 
     norm.grad = norm.grad + grad^2
     par = par-stepsize*grad/sqrt(norm.grad)
     if (par[1]>par[2]) {temp=par[1]; par[1]=par[2]; par[2]=temp}
-    trajectory = cbind(trajectory,par)
+    trajectory = cbind(trajectory,matrix(data=par,nrow=2,ncol=1))
   }
   
   # SGD period
@@ -217,7 +217,7 @@ SGD.MMD.continuous.uniform.lower.upper = function(x, par1, par2, kernel, bdwth, 
     norm.grad = norm.grad + grad^2
     par = par-stepsize*grad/sqrt(norm.grad)
     par_mean = (par_mean*i + par)/(i+1)
-    trajectory = cbind(trajectory,par_mean)
+    trajectory = cbind(trajectory,matrix(data=par_mean,nrow=2,ncol=1))
   }
   
   # return
@@ -270,7 +270,7 @@ GD.MMD.continuous.uniform.loc = function(x, par1, par2, kernel, bdwth, burnin, n
     grad = -2*mean(K1d(par+0.5*par2,x,kernel=kernel,bdwth=bdwth)-K1d(par-0.5*par2,x,kernel=kernel,bdwth=bdwth))
     norm.grad = norm.grad + grad^2
     par = par-stepsize*grad/sqrt(norm.grad)
-    trajectory = cbind(trajectory,par)
+    trajectory = cbind(trajectory,matrix(data=par,nrow=2,ncol=1))
   }
   
   # GD period
@@ -283,7 +283,7 @@ GD.MMD.continuous.uniform.loc = function(x, par1, par2, kernel, bdwth, burnin, n
     norm.grad = norm.grad + grad^2
     par = par-stepsize*grad/sqrt(norm.grad)
     par_mean = (par_mean*i + par)/(i+1)
-    trajectory = cbind(trajectory,par_mean)
+    trajectory = cbind(trajectory,matrix(data=par_mean,nrow=2,ncol=1))
   }
   
   # return

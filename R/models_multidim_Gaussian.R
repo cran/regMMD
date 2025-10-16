@@ -53,7 +53,7 @@ SGD.MMD.multidim.Gaussian.loc = function(x, par1, par2, kernel, bdwth, burnin, n
     grad = c(2*t(gradL)%*%ker%*%matrix(data=1/n,nrow=n,ncol=1))
     norm.grad = norm.grad + sum(grad^2)
     par = par-stepsize*grad/sqrt(norm.grad)
-    trajectory = cbind(trajectory,par)
+    trajectory = cbind(trajectory,matrix(data=par,nrow=p,ncol=1))
   }
   
   # SGD period
@@ -69,7 +69,7 @@ SGD.MMD.multidim.Gaussian.loc = function(x, par1, par2, kernel, bdwth, burnin, n
     norm.grad = norm.grad + sum(grad^2)
     par = par-stepsize*grad/sqrt(norm.grad)
     par_mean = (par_mean*i + par)/(i+1)
-    trajectory = cbind(trajectory,par_mean)
+    trajectory = cbind(trajectory,matrix(data=par_mean,nrow=p,ncol=1))
   }
   
   # return
@@ -211,7 +211,7 @@ SGD.MMD.multidim.Gaussian = function(x, par1, par2, kernel, bdwth, burnin, nstep
     norm.grad = norm.grad + sum(grad1^2) + norm(grad2, type="F")^2
     par1 = par1-stepsize*grad1/sqrt(norm.grad)
     par2 = par2-stepsize*grad2/sqrt(norm.grad)
-    trajectory$t1 = cbind(trajectory$t1, par1)
+    trajectory$t1 = cbind(trajectory$t1, matrix(data=par1,nrow=p,ncol=1))
     trajectory$t2 = cbind(trajectory$t2, par2)
   }
   
@@ -233,14 +233,14 @@ SGD.MMD.multidim.Gaussian = function(x, par1, par2, kernel, bdwth, burnin, nstep
     par2 = par2-stepsize*grad2/sqrt(norm.grad)
     par1_mean = (par1_mean*i + par1)/(i+1)
     par2_mean = (par2_mean*i + par2)/(i+1)
-    trajectory$t1 = cbind(trajectory$t1, par1_mean)
+    trajectory$t1 = cbind(trajectory$t1, matrix(data=par1_mean,nrow=p,ncol=1))
     trajectory$t2 = cbind(trajectory$t2, par2_mean)
   }
   
   # return
   
   res$estimator = list(par1 = par1_mean, par2 = par2_mean)
-  trajectory = res$trajectory
+  res$trajectory = trajectory
   return(res)
   
 }
@@ -296,7 +296,7 @@ GD.MMD.multidim.Gaussian.loc = function(x, par1, par2, kernel, bdwth, burnin, ns
     grad = 4*(1/(1+2*(par2^2)/bdwth))*(rep(1/n,n)%*%(diff*exp(-w)))[1,]
     norm.grad = norm.grad + grad^2
     par = par-stepsize*grad/sqrt(norm.grad)
-    trajectory = cbind(trajectory,par)
+    trajectory = cbind(trajectory,matrix(data=par,nrow=p,ncol=1))
   }
   
   # GD period
@@ -310,13 +310,13 @@ GD.MMD.multidim.Gaussian.loc = function(x, par1, par2, kernel, bdwth, burnin, ns
     norm.grad = norm.grad + grad^2
     par = par-stepsize*grad/sqrt(norm.grad)
     par_mean = (par_mean*i + par)/(i+1)
-    trajectory = cbind(trajectory,par_mean)
+    trajectory = cbind(trajectory,matrix(data=par_mean,nrow=p,ncol=1))
   }
   
   # return
   
   res$estimator = par_mean
-  trajectory = res$trajectory
+  res$trajectory = trajectory
   return(res)
   
 }

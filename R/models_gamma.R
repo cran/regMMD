@@ -206,7 +206,7 @@ SGD.MMD.gamma = function(x, par1, par2, kernel, bdwth, burnin, nstep, stepsize, 
     par = par-stepsize*grad/sqrt(norm.grad)
     par[1] = max(par[1],0.5)
     par[2] = max(par[2],1/n)
-    trajectory = cbind(trajectory,par)
+    trajectory = cbind(trajectory,matrix(data=par,nrow=2,ncol=1))
   }
   
   # SGD period
@@ -224,7 +224,7 @@ SGD.MMD.gamma = function(x, par1, par2, kernel, bdwth, burnin, nstep, stepsize, 
     par[1] = max(par[1],0.5)
     par[2] = max(par[2],1/n)
     par_mean = (par_mean*i + par)/(i+1)
-    trajectory = cbind(trajectory,par_mean)
+    trajectory = cbind(trajectory,matrix(data=par_mean,nrow=2,ncol=1))
   }
   
   # return
